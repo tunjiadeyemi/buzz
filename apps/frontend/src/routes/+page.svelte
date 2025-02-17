@@ -1,6 +1,4 @@
 <script>
-  import './app.css';
-
   let count = 0;
 </script>
 
