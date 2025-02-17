@@ -1,0 +1,19 @@
+{
+  "imports": {
+    "@hono/hono": "jsr:@hono/hono@^4.7.0",
+    "@popov/jwt": "jsr:@popov/jwt@^1.0.1"
+  },
+  "deploy": {
+    "project": "7b741296-c944-4a08-8f66-996e4dd71d6b",
+    "exclude": [
+      "**/node_modules"
+    ],
+    "include": [],
+    "entrypoint": "main.ts"
+  },
+  "tasks": {
+    "dev": "deno --allow-env --allow-net --allow-read main.ts",
+    "lint": "deno lint",
+    "test": "deno test"
+  }
+}
