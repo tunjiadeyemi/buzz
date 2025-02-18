@@ -32,7 +32,7 @@ export async function signIn(email, password) {
   return data;
 }
 
-export async function saveScore(score, total, totalTime, pageTitle) {
+export async function saveScore(score, total, totalTime, pageTitle, questions) {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('Not authenticated');
 
@@ -42,7 +42,7 @@ export async function saveScore(score, total, totalTime, pageTitle) {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify({ score, total, totalTime, pageTitle })
+    body: JSON.stringify({ score, total, totalTime, pageTitle, questions })
   });
 
   const data = await response.json();
@@ -71,9 +71,28 @@ export async function getQuestions(prompt) {
   return data;
 }
 
-export async function getScores() {
+export async function getUserHistory() {
+  const token = localStorage.getItem('token');
+
+  if (!token) throw new Error('Not authenticated');
+
+  const response = await fetch(`${API_URL}/user/history`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  console.log('history response', response);
+
+  if (!response.ok) throw new Error(response.error);
+
+  return response.json();
+}
+
+export async function getLeaderboard() {
   const response = await fetch(`${API_URL}/quiz/leaderboard`);
-  console.log('response', response);
 
   if (!response.ok) throw new Error(response.error);
 

@@ -99,7 +99,7 @@ app.post('/auth/login', async (c) => {
 app.post('/quiz/save-score', authMiddleware, async (c: any) => {
   const user = c.get('user');
   const { id, email } = user.user;
-  const { score, total, totalTime, pageTitle } = await c.req.json();
+  const { score, total, totalTime, pageTitle, questions } = await c.req.json();
 
   try {
     const { data, error } = await supabase.from('quiz').insert([
@@ -108,6 +108,7 @@ app.post('/quiz/save-score', authMiddleware, async (c: any) => {
         email: email,
         title: pageTitle,
         time: totalTime,
+        questions,
         score,
         total,
         created_at: new Date().toISOString()
@@ -122,14 +123,17 @@ app.post('/quiz/save-score', authMiddleware, async (c: any) => {
   }
 });
 
-// unprotected route
-app.get('/quiz/leaderboard', async (c) => {
-  console.log('Received request for /quiz/leaderboard');
+// protected route
+app.get('/user/history', authMiddleware, async (c: any) => {
+  const user = c.get('user');
+  const { id } = user.user;
+  console.log('Received request for /user/history');
 
   try {
     const { data, error } = await supabase
       .from('quiz')
       .select('*')
+      .eq('user_id', id)
       .order('score', { ascending: false });
 
     console.log('Fetched data from Supabase');
@@ -192,6 +196,29 @@ app.post('/quiz/questions', authMiddleware, async (c: any) => {
   }
 });
 
+// unprotected route
+app.get('/quiz/leaderboard', async (c) => {
+  console.log('Received request for /quiz/leaderboard');
+
+  try {
+    const { data, error } = await supabase
+      .from('quiz')
+      .select('*')
+      .order('score', { ascending: false });
+
+    console.log('Fetched data from Supabase');
+
+    if (error) throw error;
+
+    console.log('Returning data to client');
+
+    return c.json(data);
+  } catch (error: any) {
+    console.error(error);
+    return c.json({ error: error.message }, 500);
+  }
+});
+
 function extractJson(text: any) {
   try {
     // extract JSON part by removing backticks and the "json" tag
@@ -213,7 +240,6 @@ async function createJWT(payload: any) {
   const secret = JWT_SECRET;
 
   const response = await jwt.createJwt(payload, secret);
-  console.log('response', response);
   return response;
 }
 

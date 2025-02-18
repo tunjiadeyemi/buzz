@@ -1,4 +1,4 @@
-import { signUp, signIn, saveScore, getScores, getQuestions } from './api.js';
+import { signUp, signIn, saveScore, getLeaderboard, getQuestions, getUserHistory } from './api.js';
 
 let timerInterval;
 let totalTime = 60; // 60 seconds for the quiz
@@ -8,11 +8,11 @@ let currentQuestionIndex = 0;
 let currentQuiz = [];
 let userAnswers = [];
 let currentUser = null;
+let showingLeaderboard = true; // start with leaderboard view
 
-// update your existing functions to use the API
-async function saveScoreHistory(score, total) {
+async function saveScoreHistory(score, total, questions) {
   try {
-    await saveScore(score, total, totalTime, pageTitle);
+    await saveScore(score, total, totalTime, pageTitle, questions);
     await displayScoreHistory();
   } catch (error) {
     console.error('Error saving score:', error);
@@ -346,48 +346,139 @@ function checkAnswers(quiz, autoSubmit) {
   document.getElementById('nextQuestion').style.display = 'none';
   document.getElementById('prevQuestion').style.display = 'none';
 
-  saveScoreHistory(score, quiz.length);
+  saveScoreHistory(score, quiz.length, quiz);
   displayScoreHistory();
 }
 
 async function displayScoreHistory() {
-  try {
-    const scores = await getScores();
+  const historyContainer = document.getElementById('scoreHistory');
+  const viewHistoryButton = document.getElementById('viewHistory');
 
-    const historyContainer = document.getElementById('scoreHistory');
-    historyContainer.innerHTML = `
-      <h3>Leaderboard</h3>
-      <div class="table-container">
-        <table class="scores-table">
-          <thead>
-            <tr>
-              <th>User</th>
-              <th>Quiz</th>
-              <th>Score</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${scores
-              .map(
-                (entry) => `
+  viewHistoryButton.textContent = showingLeaderboard ? 'View My History' : 'View Leaderboard';
+
+  try {
+    if (showingLeaderboard) {
+      const scores = await getLeaderboard();
+      historyContainer.innerHTML = `
+        <h3>Leaderboard</h3>
+        <div class="table-container">
+          <table class="scores-table">
+            <thead>
               <tr>
-                <td>${entry.email}</td>
-                <td>${entry.title}</td>
-                <td>${entry.score}/${entry.total}</td>
-                <td>${entry.time}s</td>
+                <th>User</th>
+                <th>Quiz</th>
+                <th>Score</th>
+                <th>Time</th>
               </tr>
-            `
-              )
-              .join('')}
-          </tbody>
-        </table>
-      </div>
-    `;
+            </thead>
+            <tbody>
+              ${scores
+                .map(
+                  (entry) => `
+                <tr>
+                  <td>${entry.email}</td>
+                  <td>${entry.title}</td>
+                  <td>${entry.score}/${entry.total}</td>
+                  <td>${entry.time}s</td>
+                </tr>
+              `
+                )
+                .join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    } else {
+      if (!currentUser) {
+        historyContainer.innerHTML = '<p>Please sign in to view your history</p>';
+        return;
+      }
+
+      const history = await getUserHistory();
+      historyContainer.innerHTML = `
+        <h3>My Quiz History</h3>
+        <div class="table-container">
+          <table class="scores-table">
+            <thead>
+              <tr>
+                <th>Quiz</th>
+                <th>Score</th>
+                <th>Time</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${
+                history.length > 0
+                  ? history
+                      .map(
+                        (entry, index) => `
+                <tr>
+                  <td>${entry.title}</td>
+                  <td>${entry.score}/${entry.total}</td>
+                  <td>${entry.time}s</td>
+                  <td>
+                    <button class="retake-button history-button" data-index="${index}">Retake</button>
+                  </td>
+                </tr>
+              `
+                      )
+                      .join('')
+                  : '<tr><td colspan="4">No quiz history found</td></tr>'
+              }
+            </tbody>
+          </table>
+        </div>
+      `;
+
+      const retakeButtons = document.querySelectorAll('.retake-button');
+      retakeButtons.forEach((button) => {
+        button.addEventListener('click', async () => {
+          const index = parseInt(button.getAttribute('data-index'));
+          const entry = history[index];
+
+          if (entry && entry.questions) {
+            try {
+              let questions = entry.questions;
+
+              // set title to match the original quiz
+              pageTitle = entry.title;
+              document.getElementById('pageTitle').textContent = `Quiz Title: ${pageTitle}`;
+
+              // display the quiz with the questions from history
+              displayQuiz(questions);
+
+              // scroll to the top of the quiz
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+              console.error('Error retaking quiz:', error);
+              alert('Failed to load the quiz. Please try again.');
+            }
+          } else {
+            alert('Quiz questions not found for this entry.');
+          }
+        });
+      });
+    }
   } catch (error) {
-    console.error('Error fetching score history:', error);
-    historyContainer.innerHTML = '<p class="error">Error loading leaderboard</p>';
+    console.error('Error fetching history:', error);
+    historyContainer.innerHTML = `<p class="error">Error loading ${
+      showingLeaderboard ? 'leaderboard' : 'history'
+    }</p>`;
   }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  displayScoreHistory();
+
+  // If your button already exists in HTML, add this event listener
+  const viewHistoryButton = document.getElementById('viewHistory');
+  if (viewHistoryButton) {
+    viewHistoryButton.addEventListener('click', () => {
+      showingLeaderboard = !showingLeaderboard;
+      displayScoreHistory();
+    });
+  }
+});
 
 document.addEventListener('DOMContentLoaded', displayScoreHistory);
