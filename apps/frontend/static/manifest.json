@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Classroomio Quiz Extension",
+  "name": "Buzz",
   "version": "1.0",
-  "description": "A Chrome extension built with SvelteKit",
+  "description": "A simple extension built with SvelteKit",
   "action": {
     "default_popup": "index.html",
     "default_icon": "icon.png"

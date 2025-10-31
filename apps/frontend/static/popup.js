@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     generateQuizButton.textContent = 'Generating...';
 
     quizContainer.innerHTML =
-      '<img src="classroomio.svg" alt="Loading..." style="width: 100%; display: block; margin: 20px auto;">';
+      '<img src="buzz.svg" alt="Loading..." style="width: 100%; display: block; margin: 20px auto;">';
 
     try {
       await generateQuiz();
@@ -332,7 +332,7 @@ function checkAnswers(quiz, autoSubmit) {
 
     try {
       document.getElementById('quizContainer').innerHTML =
-        '<img src="classroomio.svg" alt="Loading..." style="width: 100%; display: block; margin: 20px auto;">';
+        '<img src="buzz.svg" alt="Loading..." style="width: 100%; display: block; margin: 20px auto;">';
       await generateQuiz();
     } catch (error) {
       console.error('Error generating new quiz:', error);

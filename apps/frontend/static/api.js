@@ -1,4 +1,5 @@
-const API_URL = 'https://quiz-backend.deno.dev';
+// const API_URL = 'https://quiz-backend.deno.dev';
+const API_URL = 'http://0.0.0.0:8000';
 
 export async function signUp(email, password) {
   const response = await fetch(`${API_URL}/auth/signup`, {
