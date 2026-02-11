@@ -74,12 +74,3 @@ Edits in the `client` folder require a manual extension refresh in Chrome. There
 3. Refresh the extension in Chrome.
 4. Test on a webpage.
 
-## Backend notes
-
-- Environment variables live in `buzz-backend/.env` (see `.env.example`).
-
-## Frontend notes
-
-- The SvelteKit app lives in `buzz-frontend/src`.
-- The browser-extension assets are in `buzz-frontend/static` (and mirrored in `buzz-frontend/client`).
-- If you change the API base URL, update it in both `static/api.js` and `client/api.js`.
