@@ -7,6 +7,26 @@ Buzz is a two-part project:
 
 This top-level README explains how to run each part independently or together.
 
+## About
+
+Buzz is simply a browser extension and API that generate short quizzes from the content of your current tab.
+
+Core features:
+
+- Generate quiz questions from a page URL or page text
+- Optional AI provider key support
+- Local dev-friendly setup with a simple API
+
+Tech stack:
+
+- Backend: Hono, OpenAPI, Drizzle ORM, SQLite
+- Frontend: SvelteKit, Chrome extension
+
+Architecture:
+
+- The extension gathers page context and calls the API (`POST /question`).
+- The backend returns generated questions for the extension UI.
+
 ## Repositories
 
 - [github.com/tunjiadeyemi/buzz-backend](https://github.com/tunjiadeyemi/buzz-backend)
@@ -74,3 +94,17 @@ Edits in the `client` folder require a manual extension refresh in Chrome. There
 3. Refresh the extension in Chrome.
 4. Test on a webpage.
 
+## How to deploy your version on chrome store
+
+1. revisit the manifest.json and edit whatever you feel you need to change
+2. here's a step-by-step guide for the chrome store developer dashboard: https://developer.chrome.com/docs/webstore/publish
+
+## Backend notes
+
+- Environment variables live in `buzz-backend/.env` (see `.env.example`).
+
+## Frontend notes
+
+- The SvelteKit app lives in `buzz-frontend/src`.
+- The browser-extension assets are in `buzz-frontend/static` (and mirrored in `buzz-frontend/client`).
+- If you change the API base URL, update it in both `static/api.js` and `client/api.js`.
