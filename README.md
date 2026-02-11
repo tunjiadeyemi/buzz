@@ -9,7 +9,7 @@ This top-level README explains how to run each part independently or together.
 
 ## About
 
-Buzz is simply a browser extension and API that generate short quizzes from the content of your current tab.
+Buzz is a browser extension and API that generate short quizzes from the content of your current tab.
 
 Core features:
 
@@ -31,6 +31,10 @@ Architecture:
 
 - [github.com/tunjiadeyemi/buzz-backend](https://github.com/tunjiadeyemi/buzz-backend)
 - [github.com/tunjiadeyemi/buzz-frontend](https://github.com/tunjiadeyemi/buzz-frontend)
+
+## Links
+
+- Landing page: https://tunny-buzz.netlify.app/
 
 ## Clone both repositories
 
