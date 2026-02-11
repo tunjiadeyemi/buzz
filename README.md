@@ -102,13 +102,3 @@ Edits in the `client` folder require a manual extension refresh in Chrome. There
 
 1. revisit the manifest.json and edit whatever you feel you need to change
 2. here's a step-by-step guide for the chrome store developer dashboard: https://developer.chrome.com/docs/webstore/publish
-
-## Backend notes
-
-- Environment variables live in `buzz-backend/.env` (see `.env.example`).
-
-## Frontend notes
-
-- The SvelteKit app lives in `buzz-frontend/src`.
-- The browser-extension assets are in `buzz-frontend/static` (and mirrored in `buzz-frontend/client`).
-- If you change the API base URL, update it in both `static/api.js` and `client/api.js`.
